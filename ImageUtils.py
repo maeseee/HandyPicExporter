@@ -3,13 +3,13 @@ import pyexiv2 as pyexiv2
 from PIL import Image
 
 
-def printMetadata(filename):
+def __print_metadata(filename):
     im = Image.open(filename)
     exif_dict = piexif.load(im.info["exif"])
     print(exif_dict)
 
 
-def fiveStarsToFile(filename):
+def five_stars_to_file(filename):
     with open(filename, 'rb+') as f:
         with pyexiv2.ImageData(f.read()) as img:
             changes_rating = {'Exif.Image.Rating': 5}
@@ -20,7 +20,4 @@ def fiveStarsToFile(filename):
             f.truncate()
             f.write(img.get_bytes())
         f.seek(0)
-        with pyexiv2.ImageData(f.read()) as img:
-            result = img.read_iptc()
-
-    printMetadata(filename)
+    print("5 stars to " + filename)

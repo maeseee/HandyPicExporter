@@ -65,17 +65,29 @@ def createFile(directory, filename):
     closeFtpConnection(ftp)
 
 
-def copyImageFiles(sourceDirectory, destinationDirectory, lastBackupTimestamp, isFavorit):
-    ftp = openFptConnection()
-
+def __directory_exists(ftp, directory):
     try:
-        ftp.cwd(sourceDirectory)
+        ftp.cwd(directory)
+        number_subdirectories = directory.count('/')
+        for i in range(number_subdirectories + 1):
+            ftp.cwd("..")
+        return True
     except ftplib.error_perm as e:
         if str(e).startswith("550"):
-            print("Folder " + sourceDirectory + " does not exist")
-            return
+            print("Folder " + directory + " does not exist")
+            return False
         else:
-            raise e
+            raise
+
+
+def copy_image_files(sourceDirectory, destinationDirectory, lastBackupTimestamp, isFavorit):
+    ftp = openFptConnection()
+
+    source_directory_exists = __directory_exists(ftp, sourceDirectory)
+    if not source_directory_exists:
+        return
+
+    ftp.cwd(sourceDirectory)
     ftp.sendcmd('TYPE I')
 
     fileList = []
@@ -90,8 +102,11 @@ def copyImageFiles(sourceDirectory, destinationDirectory, lastBackupTimestamp, i
 
     # Copy each file to the local directory
     for filename in fileList:
-        if filename.endswith('.jpg') or filename.endswith('.jpeg') or filename.endswith('.png') or filename.endswith(
-                '.giv' or filename.endswith('.mp4')):
+        if filename.endswith('.jpg') or \
+                filename.endswith('.jpeg') or \
+                filename.endswith('.png') or \
+                filename.endswith('.giv') or \
+                filename.endswith('.mp4'):
             filePath = destinationDirectory + filename
             if os.path.exists(filePath):
                 print(filePath + ' already copied')
@@ -111,7 +126,6 @@ def copyImageFiles(sourceDirectory, destinationDirectory, lastBackupTimestamp, i
                 ftp.retrbinary("RETR " + filename, f.write)
 
             if isFavorit:
-                print('Add favorit picture ' + filePath)
-                ImageUtils.fiveStarsToFile(filePath)
+                ImageUtils.five_stars_to_file(filePath)
         else:
             print("File " + filename + " has been ignored!")

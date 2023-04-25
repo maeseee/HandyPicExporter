@@ -17,7 +17,7 @@ def copyPics(sourceDirectory, destinationFolder, lastBackupTime, isFavorit):
     if not os.path.exists(destinationDirectory):
         os.makedirs(destinationDirectory)
 
-    FtpUtils.copyImageFiles(sourceDirectory, destinationDirectory, lastBackupTime, isFavorit)
+    FtpUtils.copy_image_files(sourceDirectory, destinationDirectory, lastBackupTime, isFavorit)
 
 
 def runCopyProcess(lastBackupTime):
