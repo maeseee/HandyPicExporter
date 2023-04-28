@@ -28,8 +28,7 @@ def runCopyProcess(lastBackupTime):
     copyPics('Pictures', 'Signal', lastBackupTime, False)  # Signal on Oppo
     copyPics('Bluetooth', 'Bluetooth', lastBackupTime, False)  # Bluetooth on Oppo
     copyPics('MIUI/ShareMe', 'Bluetooth', lastBackupTime, False)  # Bluetooth on Xiaomi
-    copyPics('WhatsApp/Media/WhatsApp Images', 'Whatsapp', lastBackupTime, False)
-    copyPics('WhatsApp/Media/WhatsApp Video', 'Whatsapp', lastBackupTime, False)
+    copyPics('Android/media/com.whatsapp/WhatsApp/Media', 'Whatsapp', lastBackupTime, False)
 
 
 def main():
@@ -52,7 +51,8 @@ def main():
 
     runCopyProcess(lastBackupTimestamp)
 
-    modificationDate = FtpUtils.readModificationDate(PATH_OF_LAST_BACKUP_FILE + NAME_OF_LAST_BACKUP_FILE)
+    backup_timestamp = time.time()
+    modificationDate = FtpUtils.write_line(PATH_OF_LAST_BACKUP_FILE + NAME_OF_LAST_BACKUP_FILE, str(backup_timestamp))
     print('Modification date is {modDate}'.format(modDate=modificationDate))
 
 
