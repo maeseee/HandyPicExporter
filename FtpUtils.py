@@ -102,7 +102,6 @@ def __get_file_modification_time(ftp, filename):
 
 def __copy_subfoldery(ftp, sourceFolder, destinationDirectory, lastBackupTimestamp, isFavorit):
     current_dir = ftp.pwd()
-    print(f"Current directory when entering: {current_dir}")
     ftp.cwd(sourceFolder)
     ftp.sendcmd('TYPE I')
 
@@ -132,7 +131,6 @@ def __copy_subfoldery(ftp, sourceFolder, destinationDirectory, lastBackupTimesta
 
         file_path = destinationDirectory + filename
         if os.path.exists(file_path):
-            print(file_path + ' already copied')
             continue
 
         modificationTimestamp = __get_file_modification_time(ftp, filename)
@@ -147,8 +145,6 @@ def __copy_subfoldery(ftp, sourceFolder, destinationDirectory, lastBackupTimesta
             ImageUtils.five_stars_to_file(file_path)
 
     __exit_directory(ftp, 1)
-    current_dir = ftp.pwd()
-    print(f"Current directory when leaving: {current_dir}")
 
 
 def copy_image_files(sourceDirectory, destinationDirectory, lastBackupTimestamp, isFavorit):
