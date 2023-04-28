@@ -32,7 +32,6 @@ def runCopyProcess(lastBackupTime):
 
 
 def main():
-    # Check if destination folder is available
     if not os.path.exists(DESTINATION_FOLDER):
         print('Nas is not connected! Path is {path}'.format(path=DESTINATION_FOLDER))
         sys.exit()
@@ -51,9 +50,7 @@ def main():
 
     runCopyProcess(lastBackupTimestamp)
 
-    backup_timestamp = time.time()
-    modificationDate = FtpUtils.write_line(PATH_OF_LAST_BACKUP_FILE + NAME_OF_LAST_BACKUP_FILE, str(backup_timestamp))
-    print('Modification date is {modDate}'.format(modDate=modificationDate))
+    FtpUtils.readModificationDate(PATH_OF_LAST_BACKUP_FILE + NAME_OF_LAST_BACKUP_FILE)
 
 
 if __name__ == "__main__":

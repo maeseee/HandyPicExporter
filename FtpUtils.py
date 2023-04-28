@@ -44,6 +44,17 @@ def readFirstLine(fullFileName):
     return float(fileContents)
 
 
+def write_line(backup_file_path, text):
+    ftp = openFptConnection()
+
+    with open(text, 'rb') as f:
+        # Use the STOR command to upload the file to the remote server
+        ftp.cwd(backup_file_path)
+        ftp.storbinary(f'STOR {backup_file_path}', f)
+
+    closeFtpConnection(ftp)
+
+
 def isFileAvailable(directory, filename):
     ftp = openFptConnection()
 
