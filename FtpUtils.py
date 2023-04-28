@@ -116,7 +116,11 @@ def __copy_subfoldery(ftp, sourceFolder, destinationDirectory, lastBackupTimesta
         else:
             raise
 
+    numberOfElements = len(fileList)
+    numberElementsProcessed = 0
     for filename in fileList:
+        numberElementsProcessed = numberElementsProcessed + 1
+        print("\rProcess " + str(numberElementsProcessed) + "/" + str(numberOfElements), end='', flush=True)
         if __directory_exists(ftp, filename):
             print("copy subdirectory " + filename)
             __copy_subfoldery(ftp, filename, destinationDirectory, lastBackupTimestamp,isFavorit)
