@@ -45,20 +45,6 @@ class FtpUtils:
 
         return content
 
-    def is_file_available(self, directory, filename):
-        self.ftp.cwd(directory)
-        file_list = self.ftp.nlst()
-        number_subdirectories = directory.count('/') + 1
-        self.__exit_directory(number_subdirectories)
-        return filename in file_list
-
-    def create_file(self, directory, filename):
-        self.ftp.cwd(directory) # TODO do not enter directory
-        with open(filename, 'w') as file:
-            file.write('0')
-        number_subdirectories = directory.count('/') + 1
-        self.__exit_directory(number_subdirectories)
-
     def __exit_directory(self, number_subdirectories):
         for i in range(number_subdirectories):
             self.ftp.cwd("..")
