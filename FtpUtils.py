@@ -7,7 +7,7 @@ from ftplib import FTP
 import ImageUtils
 
 
-def openFptConnection():
+def open_ftp_connection():
     ftp_server = "192.168.50.211"
     ftp_user = "android"
     ftp_pass = "mySweetHandyAccess"
@@ -20,60 +20,60 @@ def openFptConnection():
     return ftp
 
 
-def closeFtpConnection(ftp):
+def close_ftp_connection(ftp):
     ftp.quit()
 
 
-def readModificationDate(fullFilename):
-    ftp = openFptConnection()
+def read_modification_date(full_filename):
+    ftp = open_ftp_connection()
 
-    mod_time = ftp.sendcmd("MDTM " + fullFilename)[4:]
+    mod_time = ftp.sendcmd("MDTM " + full_filename)[4:]
 
-    closeFtpConnection(ftp)
+    close_ftp_connection(ftp)
     return mod_time
 
 
-def readFirstLine(fullFileName):
-    ftp = openFptConnection()
+def read_first_line(full_file_name):
+    ftp = open_ftp_connection()
 
     with io.StringIO() as file_obj:
-        ftp.retrlines('RETR ' + fullFileName, file_obj.write)
-        fileContents = file_obj.getvalue()
+        ftp.retrlines('RETR ' + full_file_name, file_obj.write)
+        file_contents = file_obj.getvalue()
 
-    closeFtpConnection(ftp)
-    return float(fileContents)
+    close_ftp_connection(ftp)
+    return float(file_contents)
 
 
 def write_line(backup_file_path, text):
-    ftp = openFptConnection()
+    ftp = open_ftp_connection()
 
     with open(text, 'rb') as f:
         # Use the STOR command to upload the file to the remote server
         ftp.cwd(backup_file_path)
         ftp.storbinary(f'STOR {backup_file_path}', f)
 
-    closeFtpConnection(ftp)
+    close_ftp_connection(ftp)
 
 
-def isFileAvailable(directory, filename):
-    ftp = openFptConnection()
+def is_file_available(directory, filename):
+    ftp = open_ftp_connection()
 
     ftp.cwd(directory)
     file_list = ftp.nlst()
-    fileAvailable = filename in file_list
+    file_available = filename in file_list
 
-    closeFtpConnection(ftp)
-    return fileAvailable
+    close_ftp_connection(ftp)
+    return file_available
 
 
-def createFile(directory, filename):
-    ftp = openFptConnection()
+def create_file(directory, filename):
+    ftp = open_ftp_connection()
 
     ftp.cwd(directory)
     with open(filename, 'w') as file:
         file.write('0')
 
-    closeFtpConnection(ftp)
+    close_ftp_connection(ftp)
 
 
 def __exit_directory(ftp, number_subdirectories):
@@ -94,7 +94,7 @@ def __directory_exists(ftp, directory):
             raise
 
 
-def __has_image_fileending(filename):
+def __has_image_file_ending(filename):
     return filename.endswith('.jpg') or \
         filename.endswith('.jpeg') or \
         filename.endswith('.png') or \
@@ -103,69 +103,68 @@ def __has_image_fileending(filename):
 
 
 def __get_file_modification_time(ftp, filename):
-    modificationTimeStr = ftp.sendcmd('MDTM ' + filename)[4:]
-    modificationTime = int(float(modificationTimeStr))
-    modificationDateTime = datetime.strptime(str(modificationTime), '%Y%m%d%H%M%S')
+    modification_time_str = ftp.sendcmd('MDTM ' + filename)[4:]
+    modification_time = int(float(modification_time_str))
+    modification_date_time = datetime.strptime(str(modification_time), '%Y%m%d%H%M%S')
     # convert the datetime object to an integer representing the number of seconds since 1970
-    modificationTimestamp = int(modificationDateTime.timestamp())
-    return modificationTimestamp
+    modification_timestamp = int(modification_date_time.timestamp())
+    return modification_timestamp
 
 
-def __copy_subfoldery(ftp, sourceFolder, destinationDirectory, lastBackupTimestamp, isFavorit):
-    current_dir = ftp.pwd()
-    ftp.cwd(sourceFolder)
+def __copy_subfolder(ftp, source_folder, destination_directory, last_backup_timestamp, is_favorite):
+    ftp.cwd(source_folder)
     ftp.sendcmd('TYPE I')
 
-    fileList = []
+    file_list = []
     try:
-        fileList = ftp.nlst()
-        print(fileList)
+        file_list = ftp.nlst()
+        print(file_list)
     except ftplib.error_perm as resp:
         if str(resp) == "550 No files found":
             print("No files in this directory")
         else:
             raise
 
-    numberOfElements = len(fileList)
-    numberElementsProcessed = 0
-    for filename in fileList:
-        numberElementsProcessed = numberElementsProcessed + 1
-        print("\rProcess " + str(numberElementsProcessed) + "/" + str(numberOfElements), end='', flush=True)
+    number_of_elements = len(file_list)
+    number_elements_processed = 0
+    for filename in file_list:
+        number_elements_processed = number_elements_processed + 1
+        print("\rProcess " + str(number_elements_processed) + "/" + str(number_of_elements), end='', flush=True)
         if __directory_exists(ftp, filename):
             print("copy subdirectory " + filename)
-            __copy_subfoldery(ftp, filename, destinationDirectory, lastBackupTimestamp,isFavorit)
+            __copy_subfolder(ftp, filename, destination_directory, last_backup_timestamp, is_favorite)
             continue
 
-        if not __has_image_fileending(filename):
+        if not __has_image_file_ending(filename):
             print("File " + filename + " has been ignored!")
             continue
 
-        file_path = destinationDirectory + filename
+        file_path = destination_directory + filename
         if os.path.exists(file_path):
             continue
 
-        modificationTimestamp = __get_file_modification_time(ftp, filename)
+        modification_timestamp = __get_file_modification_time(ftp, filename)
 
-        if modificationTimestamp < lastBackupTimestamp:
+        if modification_timestamp < last_backup_timestamp:
             continue
 
         with open(file_path, "wb") as f:
             ftp.retrbinary("RETR " + filename, f.write)
 
-        if isFavorit:
+        if is_favorite:
             ImageUtils.five_stars_to_file(file_path)
 
     __exit_directory(ftp, 1)
 
 
-def copy_image_files(sourceDirectory, destinationDirectory, lastBackupTimestamp, isFavorit):
-    ftp = openFptConnection()
+def copy_image_files(source_directory, destination_directory, last_backup_timestamp, is_favorite):
+    ftp = open_ftp_connection()
 
-    source_directory_exists = __directory_exists(ftp, sourceDirectory)
+    source_directory_exists = __directory_exists(ftp, source_directory)
     if not source_directory_exists:
-        print("Directory " + sourceDirectory + " does not exist")
+        print("Directory " + source_directory + " does not exist")
         return
 
-    __copy_subfoldery(ftp, sourceDirectory, destinationDirectory, lastBackupTimestamp, isFavorit)
+    __copy_subfolder(ftp, source_directory, destination_directory, last_backup_timestamp, is_favorite)
 
-    closeFtpConnection(ftp)
+    close_ftp_connection(ftp)
