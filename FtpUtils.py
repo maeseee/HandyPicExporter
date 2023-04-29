@@ -77,10 +77,7 @@ class FtpUtils:
         modification_timestamp = int(modification_date_time.timestamp())
         return modification_timestamp
 
-    def __copy_subfolder(self, source_folder, destination_directory, last_backup_timestamp, is_favorite):
-        self.ftp.cwd(source_folder)
-        self.ftp.sendcmd('TYPE I')
-
+    def __get_file_list_of_current_directory(self):
         file_list = []
         try:
             file_list = self.ftp.nlst()
@@ -90,6 +87,13 @@ class FtpUtils:
                 print("No files in this directory")
             else:
                 raise
+        return file_list
+
+    def __copy_subfolder(self, source_folder, destination_directory, last_backup_timestamp, is_favorite):
+        self.ftp.cwd(source_folder)
+        self.ftp.sendcmd('TYPE I')
+
+        file_list = self.__get_file_list_of_current_directory()
 
         number_of_elements = len(file_list)
         number_elements_processed = 0
@@ -110,7 +114,6 @@ class FtpUtils:
                 continue
 
             modification_timestamp = self.__get_file_modification_time(filename)
-
             if modification_timestamp < last_backup_timestamp:
                 continue
 
