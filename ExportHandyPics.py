@@ -18,7 +18,8 @@ def __copy_pics(source_directory, destination_folder, last_backup_time, is_favor
     if not os.path.exists(destination_directory):
         os.makedirs(destination_directory)
 
-    FtpUtils.copy_image_files(source_directory, destination_directory, last_backup_time, is_favorite)
+    ftp = FtpUtils.FtpUtils()
+    ftp.copy_image_files(source_directory, destination_directory, last_backup_time, is_favorite)
 
 
 def __run_copy_process(last_backup_time):
@@ -37,10 +38,11 @@ def main():
         print('Nas is not connected! Path is {path}'.format(path=DESTINATION_FOLDER))
         sys.exit()
 
-    if not FtpUtils.is_file_available(PATH_OF_LAST_BACKUP_FILE, NAME_OF_LAST_BACKUP_FILE):
-        FtpUtils.create_file(PATH_OF_LAST_BACKUP_FILE, NAME_OF_LAST_BACKUP_FILE)
+    ftp = FtpUtils.FtpUtils()
+    if not ftp.is_file_available(PATH_OF_LAST_BACKUP_FILE, NAME_OF_LAST_BACKUP_FILE):
+        ftp.create_file(PATH_OF_LAST_BACKUP_FILE, NAME_OF_LAST_BACKUP_FILE)
 
-    last_backup_timestamp = FtpUtils.read_first_line(PATH_OF_LAST_BACKUP_FILE + NAME_OF_LAST_BACKUP_FILE)
+    last_backup_timestamp = ftp.read_first_line(PATH_OF_LAST_BACKUP_FILE + NAME_OF_LAST_BACKUP_FILE)
     backup_time_str = time.ctime(last_backup_timestamp)
     print('Last backup time was {timeStr} from {value}'.format(timeStr=backup_time_str, value=last_backup_timestamp))
 
@@ -51,10 +53,9 @@ def main():
 
     __run_copy_process(last_backup_timestamp)
 
-    FtpUtils.write_line(PATH_OF_LAST_BACKUP_FILE + NAME_OF_LAST_BACKUP_FILE)
+    backup_timestamp = time.time()
+    ftp.write_line(PATH_OF_LAST_BACKUP_FILE + NAME_OF_LAST_BACKUP_FILE, str(backup_timestamp))
 
 
 if __name__ == "__main__":
-    # Get first argument
-    # dir = sys.argv[1]
     main()
