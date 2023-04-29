@@ -39,10 +39,8 @@ def main():
         sys.exit()
 
     ftp = FtpUtils.FtpUtils()
-    if not ftp.is_file_available(PATH_OF_LAST_BACKUP_FILE, NAME_OF_LAST_BACKUP_FILE):
-        ftp.create_file(PATH_OF_LAST_BACKUP_FILE, NAME_OF_LAST_BACKUP_FILE)
-
-    last_backup_timestamp = ftp.read_first_line(PATH_OF_LAST_BACKUP_FILE + NAME_OF_LAST_BACKUP_FILE)
+    last_backup_timestamp = ftp.read_file_if_available(PATH_OF_LAST_BACKUP_FILE + NAME_OF_LAST_BACKUP_FILE)
+    last_backup_timestamp = float(last_backup_timestamp[:-1])
     backup_time_str = time.ctime(last_backup_timestamp)
     print('Last backup time was {timeStr} from {value}'.format(timeStr=backup_time_str, value=last_backup_timestamp))
 

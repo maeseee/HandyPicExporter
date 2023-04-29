@@ -26,17 +26,24 @@ class FtpUtils:
         mod_time = self.ftp.sendcmd("MDTM " + full_filename)[4:]
         return mod_time
 
-    def read_first_line(self, full_file_name):
-        with io.StringIO() as file_obj:
-            self.ftp.retrlines('RETR ' + full_file_name, file_obj.write)
-            file_contents = file_obj.getvalue()
-
-        return float(file_contents)
-
     def write_line(self, file_path, text):
         stream = io.BytesIO(text.encode())
         self.ftp.storbinary(f"STOR {file_path}", stream)
         stream.close()
+
+    def read_file_if_available(self, file_path):
+        content = ""
+
+        def callback(line):
+            nonlocal content
+            content += line + "\n"
+
+        try:
+            self.ftp.retrlines(f"RETR {file_path}", callback)
+        except ftplib.error_perm:
+            return "0\n"
+
+        return content
 
     def is_file_available(self, directory, filename):
         self.ftp.cwd(directory)
