@@ -51,7 +51,7 @@ def main():
 
     __run_copy_process(last_backup_timestamp)
 
-    FtpUtils.read_modification_date(PATH_OF_LAST_BACKUP_FILE + NAME_OF_LAST_BACKUP_FILE)
+    FtpUtils.write_line(PATH_OF_LAST_BACKUP_FILE + NAME_OF_LAST_BACKUP_FILE)
 
 
 if __name__ == "__main__":
