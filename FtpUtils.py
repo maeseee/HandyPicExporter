@@ -88,6 +88,16 @@ class FtpUtils:
                 raise
         return file_list
 
+    @staticmethod
+    def __is_in_ignore_list(filename):
+        if "trash" in filename.lower():
+            return True
+        if "Sent" is filename:
+            return True
+        if "Private" is filename:
+            return True
+        return False
+
     def __copy_subfolder(self, source_folder, destination_directory, last_backup_timestamp, is_favorite):
         self.ftp.cwd(source_folder)
         self.ftp.sendcmd('TYPE I')
@@ -100,7 +110,7 @@ class FtpUtils:
             number_elements_processed = number_elements_processed + 1
             print("\rProcess " + str(number_elements_processed) + "/" + str(number_of_elements), end='', flush=True)
 
-            if "trash" in filename.lower():
+            if self.__is_in_ignore_list(filename):
                 continue
 
             if self.__directory_exists(filename):
