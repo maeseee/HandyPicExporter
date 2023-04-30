@@ -35,8 +35,11 @@ def __run_copy_process(last_backup_time):
 
 def main():
     if not os.path.exists(DESTINATION_FOLDER):
-        print('Nas is not connected! Path is {path}'.format(path=DESTINATION_FOLDER))
+        print('Destination folder {path} is not available!'.format(path=DESTINATION_FOLDER))
         sys.exit()
+
+    if not os.listdir(DESTINATION_FOLDER):
+        print('Destination folder {path} is not empty!'.format(path=DESTINATION_FOLDER))
 
     ftp = FtpUtils.FtpUtils()
     last_backup_timestamp = ftp.read_file_if_available(PATH_OF_LAST_BACKUP_FILE + NAME_OF_LAST_BACKUP_FILE)
