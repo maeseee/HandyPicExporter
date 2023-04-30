@@ -60,14 +60,6 @@ class FtpUtils:
             else:
                 raise
 
-    @staticmethod
-    def __has_image_file_ending(filename):
-        return filename.endswith('.jpg') or \
-            filename.endswith('.jpeg') or \
-            filename.endswith('.png') or \
-            filename.endswith('.giv') or \
-            filename.endswith('.mp4')
-
     def __get_file_modification_time(self, filename):
         modification_time_str = self.ftp.sendcmd('MDTM ' + filename)[4:]
         modification_time = int(float(modification_time_str))
@@ -88,16 +80,6 @@ class FtpUtils:
                 raise
         return file_list
 
-    @staticmethod
-    def __is_in_ignore_list(filename):
-        if "trash" in filename.lower():
-            return True
-        if "Sent" is filename:
-            return True
-        if "Private" is filename:
-            return True
-        return False
-
     def __copy_subfolder(self, source_folder, destination_directory, last_backup_timestamp, is_favorite):
         self.ftp.cwd(source_folder)
         self.ftp.sendcmd('TYPE I')
@@ -110,7 +92,7 @@ class FtpUtils:
             number_elements_processed = number_elements_processed + 1
             print("\rProcess " + str(number_elements_processed) + "/" + str(number_of_elements), end='', flush=True)
 
-            if self.__is_in_ignore_list(filename):
+            if ImageUtils.is_in_ignore_list(filename):
                 continue
 
             if self.__directory_exists(filename):
@@ -118,7 +100,7 @@ class FtpUtils:
                 self.__copy_subfolder(filename, destination_directory, last_backup_timestamp, is_favorite)
                 continue
 
-            if not self.__has_image_file_ending(filename):
+            if not ImageUtils.has_image_file_ending(filename):
                 print("File " + filename + " has been ignored!")
                 continue
 

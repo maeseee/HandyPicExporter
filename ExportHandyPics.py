@@ -13,6 +13,7 @@ DESTINATION_FOLDER = 'C:\\Users\\maese\\Documents\\Temp\\'
 
 ip_address = ""
 
+
 def __copy_pics(source_directory, destination_folder, last_backup_time, is_favorite):
     destination_directory = DESTINATION_FOLDER + destination_folder + "\\"
     print('Copy pictures from ' + source_directory + ' to ' + destination_directory)

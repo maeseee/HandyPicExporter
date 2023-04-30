@@ -21,3 +21,21 @@ def five_stars_to_file(filename):
             f.write(img.get_bytes())
         f.seek(0)
     print("5 stars to " + filename)
+
+
+def has_image_file_ending(filename):
+    return filename.endswith('.jpg') or \
+        filename.endswith('.jpeg') or \
+        filename.endswith('.png') or \
+        filename.endswith('.giv') or \
+        filename.endswith('.mp4')
+
+
+def is_in_ignore_list(filename):
+    if "trash" in filename.lower():
+        return True
+    if "Sent" is filename:
+        return True
+    if "Private" is filename:
+        return True
+    return False
