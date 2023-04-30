@@ -9,8 +9,7 @@ import ImageUtils
 
 class FtpUtils:
 
-    def __init__(self):
-        ftp_server = "192.168.50.211"
+    def __init__(self, ftp_server):
         ftp_user = "android"
         ftp_pass = "mySweetHandyAccess"
         ftp_port = 2221

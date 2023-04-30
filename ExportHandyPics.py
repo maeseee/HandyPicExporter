@@ -11,6 +11,7 @@ NAME_OF_LAST_BACKUP_FILE = 'LastBackup.txt'
 # DESTINATION_FOLDER = 'C:\\Users\\maese\\Bilder\\FromHandy\\'
 DESTINATION_FOLDER = 'C:\\Users\\maese\\Documents\\Temp\\'
 
+ip_address = ""
 
 def __copy_pics(source_directory, destination_folder, last_backup_time, is_favorite):
     destination_directory = DESTINATION_FOLDER + destination_folder + "\\"
@@ -18,7 +19,7 @@ def __copy_pics(source_directory, destination_folder, last_backup_time, is_favor
     if not os.path.exists(destination_directory):
         os.makedirs(destination_directory)
 
-    ftp = FtpUtils.FtpUtils()
+    ftp = FtpUtils.FtpUtils(ip_address)
     ftp.copy_image_files(source_directory, destination_directory, last_backup_time, is_favorite)
 
 
@@ -41,16 +42,19 @@ def main():
     if not os.listdir(DESTINATION_FOLDER):
         print('Destination folder {path} is not empty!'.format(path=DESTINATION_FOLDER))
 
-    ftp = FtpUtils.FtpUtils()
-    last_backup_timestamp = ftp.read_file_if_available(PATH_OF_LAST_BACKUP_FILE + NAME_OF_LAST_BACKUP_FILE)
-    last_backup_timestamp = float(last_backup_timestamp[:-1])
-    backup_time_str = time.ctime(last_backup_timestamp)
-    print('Last backup time was {timeStr} from {value}'.format(timeStr=backup_time_str, value=last_backup_timestamp))
-
     print('Have you copied the favourites pictures to the album "Best"? [Yes|No]')
     text = input("")
     if not str(text).lower().startswith("y"):
         sys.exit()
+
+    global ip_address
+    ip_address = input("Enter the IP address of the server: ")
+
+    ftp = FtpUtils.FtpUtils(ip_address)
+    last_backup_timestamp = ftp.read_file_if_available(PATH_OF_LAST_BACKUP_FILE + NAME_OF_LAST_BACKUP_FILE)
+    last_backup_timestamp = float(last_backup_timestamp[:-1])
+    backup_time_str = time.ctime(last_backup_timestamp)
+    print('Last backup time was {timeStr} from {value}'.format(timeStr=backup_time_str, value=last_backup_timestamp))
 
     __run_copy_process(last_backup_timestamp)
 
