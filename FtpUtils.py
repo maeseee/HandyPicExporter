@@ -99,6 +99,10 @@ class FtpUtils:
         for filename in file_list:
             number_elements_processed = number_elements_processed + 1
             print("\rProcess " + str(number_elements_processed) + "/" + str(number_of_elements), end='', flush=True)
+
+            if "trash" in filename.lower():
+                continue
+
             if self.__directory_exists(filename):
                 print("copy subdirectory " + filename)
                 self.__copy_subfolder(filename, destination_directory, last_backup_timestamp, is_favorite)
