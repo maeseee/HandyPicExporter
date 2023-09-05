@@ -9,13 +9,13 @@ import ImageUtils
 
 class FtpUtils:
 
-    def __init__(self, ftp_server):
+    def __init__(self, ftp_server_ip):
         ftp_user = "android"
         ftp_pass = "mySweetHandyAccess"
         ftp_port = 2221
 
         self.ftp = FTP()
-        self.ftp.connect(ftp_server, ftp_port)
+        self.ftp.connect(ftp_server_ip, ftp_port)
         self.ftp.login(ftp_user, ftp_pass)
 
     def __del__(self):
@@ -48,7 +48,7 @@ class FtpUtils:
         for i in range(number_subdirectories):
             self.ftp.cwd("..")
 
-    def __directory_exists(self, directory):
+    def __is_directory(self, directory):
         try:
             self.ftp.cwd(directory)
             number_subdirectories = directory.count('/') + 1
@@ -84,6 +84,9 @@ class FtpUtils:
         self.ftp.cwd(source_folder)
         self.ftp.sendcmd('TYPE I')
 
+        if ImageUtils.is_path_in_ignore_list(source_folder):
+            return
+
         file_list = self.__get_file_list_of_current_directory()
 
         number_of_elements = len(file_list)
@@ -92,16 +95,16 @@ class FtpUtils:
             number_elements_processed = number_elements_processed + 1
             print("\rProcess " + str(number_elements_processed) + "/" + str(number_of_elements), end='', flush=True)
 
-            if ImageUtils.is_in_ignore_list(filename):
+            if ImageUtils.is_filename_in_ignore_list(filename):
                 continue
 
-            if self.__directory_exists(filename):
-                print("copy subdirectory " + filename)
+            if self.__is_directory(filename):
+                print("\nCopy subdirectory " + filename)
                 self.__copy_subfolder(filename, destination_directory, last_backup_timestamp, is_favorite)
                 continue
 
             if not ImageUtils.has_image_file_ending(filename):
-                print("File " + filename + " has been ignored!")
+                print("\nFile " + source_folder + "/" + filename + " has been ignored!")
                 continue
 
             file_path = destination_directory + filename
@@ -121,8 +124,8 @@ class FtpUtils:
         self.__exit_directory(1)
 
     def copy_image_files(self, source_directory, destination_directory, last_backup_timestamp, is_favorite):
-        source_directory_exists = self.__directory_exists(source_directory)
-        if not source_directory_exists:
+        is_directory = self.__is_directory(source_directory)
+        if not is_directory:
             print("Directory " + source_directory + " does not exist")
             return
 

@@ -1,21 +1,22 @@
 #! /usr/bin/python
-
+# TODO read me
 import os
 import sys
 import time
+import socket
 
 import FtpUtils
 
 PATH_OF_LAST_BACKUP_FILE = 'DCIM/'  # Do not save it on the root of the phone as it automatically gets deleted
 NAME_OF_LAST_BACKUP_FILE = 'LastBackup.txt'
-# DESTINATION_FOLDER = 'C:\\Users\\maese\\Bilder\\FromHandy\\'
-DESTINATION_FOLDER = 'C:\\Users\\maese\\Documents\\Temp\\'
+DESTINATION_ROOT_FOLDER = 'C:\\Users\\maese\\Bilder\\FromHandy\\'
 
 ip_address = ""
+destination_folder = ""
 
 
-def __copy_pics(source_directory, destination_folder, last_backup_time, is_favorite):
-    destination_directory = DESTINATION_FOLDER + destination_folder + "\\"
+def __copy_pics(source_directory, destination_sub_folder, last_backup_time, is_favorite):
+    destination_directory = destination_folder + destination_sub_folder + "\\"
     print('Copy pictures from ' + source_directory + ' to ' + destination_directory)
     if not os.path.exists(destination_directory):
         os.makedirs(destination_directory)
@@ -35,13 +36,26 @@ def __run_copy_process(last_backup_time):
     __copy_pics('Android/media/com.whatsapp/WhatsApp/Media', 'Whatsapp', last_backup_time, False)
 
 
+def __is_valid_ip(ip):
+    try:
+        # Check if it's a valid IPv4 or IPv6 address
+        socket.inet_pton(socket.AF_INET, ip)  # Try IPv4
+        return True
+    except socket.error:
+        try:
+            socket.inet_pton(socket.AF_INET6, ip)  # Try IPv6
+            return True
+        except socket.error:
+            return False
+
+
 def main():
-    if not os.path.exists(DESTINATION_FOLDER):
-        print('Destination folder {path} is not available!'.format(path=DESTINATION_FOLDER))
+    if not os.path.exists(DESTINATION_ROOT_FOLDER):
+        print('Destination folder {path} is not available!'.format(path=DESTINATION_ROOT_FOLDER))
         sys.exit()
 
-    if not os.listdir(DESTINATION_FOLDER):
-        print('Destination folder {path} is not empty!'.format(path=DESTINATION_FOLDER))
+    if not os.listdir(DESTINATION_ROOT_FOLDER):
+        print('Destination folder {path} is not empty!'.format(path=DESTINATION_ROOT_FOLDER))
 
     print('Have you copied the favourites pictures to the album "Best"? [Yes|No]')
     text = input("")
@@ -50,6 +64,14 @@ def main():
 
     global ip_address
     ip_address = input("Enter the IP address of the server: ")
+    if not __is_valid_ip(ip_address):
+        print('Invalid ip address {ip} entered!'.format(ip=ip_address))
+        sys.exit()
+
+    folder_name = input("Enter the folder name: ")
+    global destination_folder
+    destination_folder = DESTINATION_ROOT_FOLDER + folder_name + '\\'
+    os.makedirs(destination_folder, exist_ok=True)
 
     ftp = FtpUtils.FtpUtils(ip_address)
     last_backup_timestamp = ftp.read_file_if_available(PATH_OF_LAST_BACKUP_FILE + NAME_OF_LAST_BACKUP_FILE)

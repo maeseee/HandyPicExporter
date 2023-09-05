@@ -31,11 +31,19 @@ def has_image_file_ending(filename):
         filename.endswith('.mp4')
 
 
-def is_in_ignore_list(filename):
+def is_filename_in_ignore_list(filename):
     if "trash" in filename.lower():
         return True
-    if "Sent" is filename:
+    if filename.startswith("."):
         return True
-    if "Private" is filename:
+    return False
+
+
+def is_path_in_ignore_list(path):
+    if "Sent" is path:
+        return True
+    if "Private" is path:
+        return True
+    if "/." in path:
         return True
     return False
