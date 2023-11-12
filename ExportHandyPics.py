@@ -51,11 +51,11 @@ def __is_valid_ip(ip):
 
 def main():
     if not os.path.exists(DESTINATION_ROOT_FOLDER):
-        print('Destination folder {path} is not available!'.format(path=DESTINATION_ROOT_FOLDER))
+        print(f'Destination folder {DESTINATION_ROOT_FOLDER} is not available!')
         sys.exit()
 
     if not os.listdir(DESTINATION_ROOT_FOLDER):
-        print('Destination folder {path} is not empty!'.format(path=DESTINATION_ROOT_FOLDER))
+        print(f'Destination folder {DESTINATION_ROOT_FOLDER} is not empty!')
 
     print('Have you copied the favourites pictures to the album "Best"? [Yes|No]')
     text = input("")
@@ -65,7 +65,7 @@ def main():
     global ip_address
     ip_address = input("Enter the IP address of the server: ")
     if not __is_valid_ip(ip_address):
-        print('Invalid ip address {ip} entered!'.format(ip=ip_address))
+        print(f'Invalid ip address {ip_address} entered!')
         sys.exit()
 
     folder_name = input("Enter the folder name: ")
@@ -77,7 +77,7 @@ def main():
     last_backup_timestamp = ftp.read_file_if_available(PATH_OF_LAST_BACKUP_FILE + NAME_OF_LAST_BACKUP_FILE)
     last_backup_timestamp = float(last_backup_timestamp[:-1])
     backup_time_str = time.ctime(last_backup_timestamp)
-    print('Last backup time was {timeStr} from {value}'.format(timeStr=backup_time_str, value=last_backup_timestamp))
+    print(f'Last backup time was {backup_time_str} from {last_backup_timestamp}')
 
     __run_copy_process(last_backup_timestamp)
 
