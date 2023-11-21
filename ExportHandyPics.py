@@ -27,7 +27,8 @@ def __copy_pics(source_directory, destination_sub_folder, last_backup_time, is_f
 
 def __run_copy_process(last_backup_time):
     __copy_pics('DCIM/MyAlbums/Best', 'Camera', last_backup_time, True)  # Favourites on Oppo
-    __copy_pics('MIUI/Gallery/cloud/owner/best', 'Camera', last_backup_time, True)  # Favourites on Xiaomi
+    __copy_pics('MIUI/Gallery/cloud/owner/best', 'Camera', last_backup_time, True)  # Favourites old on Xiaomi
+    __copy_pics('Pictures/Gallery/owner/best', 'Camera', last_backup_time, True)  # Favourites on Xiaomi
     __copy_pics('MIUI/Gallery/cloud/owner', 'Camera', last_backup_time, True)  # Albums on Xiaomi
     __copy_pics('DCIM', 'Camera', last_backup_time, False)
     __copy_pics('Pictures', 'Signal', last_backup_time, False)  # Signal on Oppo
