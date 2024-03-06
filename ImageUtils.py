@@ -10,6 +10,10 @@ def __print_metadata(filename):
 
 
 def five_stars_to_file(filename):
+    if not can_modify_meta_data:
+        return
+
+    print(filename)
     with open(filename, 'rb+') as f:
         with pyexiv2.ImageData(f.read()) as img:
             changes_rating = {'Exif.Image.Rating': 5}
@@ -29,6 +33,11 @@ def has_image_file_ending(filename):
         filename.endswith('.png') or \
         filename.endswith('.giv') or \
         filename.endswith('.mp4')
+
+
+def can_modify_meta_data(filename):
+    return filename.endswith('.jpg') or \
+        filename.endswith('.jpeg')
 
 
 def is_filename_in_ignore_list(filename):
