@@ -57,6 +57,8 @@ def is_path_in_ignore_list(path):
         return True
     if "Private" is path:
         return True
+    if path.__contains__("Audio"):
+        return True
     if "/." in path:
         return True
     return False
